@@ -14,7 +14,7 @@ Login.create = function (newLogin, result) {
         else {
             result(null, res.insertId);
         }
-    });           
+    });
 };
 
-module.exports = Book;
+module.exports = Login;
