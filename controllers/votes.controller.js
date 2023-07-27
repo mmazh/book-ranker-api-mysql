@@ -7,6 +7,20 @@ exports.findAll = function(req, res) {
   });
 };
 
+exports.findAllForBook = function(req, res) {
+  Votes.findAllForBook(req.params.id, function(err, vote) {
+    if (err) res.send(err);
+    res.send(vote);
+  });
+};
+
+exports.findAllForUser = function(req, res) {
+  Votes.findAllForUser(req.params.id, function(err, vote) {
+    if (err) res.send(err);
+    res.send(vote);
+  });
+};
+
 exports.create = function(req, res) {
     const newVote = new Votes(req.body);
     Votes.create(newVote, function(err, vote) {
