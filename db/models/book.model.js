@@ -1,10 +1,8 @@
 var sql = require('../db');
 
-//Employee object create
 var Book = function(book) {
     this.title = book.title;
     this.author = book.author;
-    // this.id = book.id;
 };
 
 Book.create = function (newBook, result) {    
