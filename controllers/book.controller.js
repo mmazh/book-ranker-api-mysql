@@ -2,9 +2,9 @@
 const Book = require('../db/models/book.model');
 
 exports.findAll = function(req, res) {
-  Book.findAll(function(err, employee) {
+  Book.findAll(function(err, book) {
     if (err) res.send(err);
-    res.send(employee);
+    res.send(book);
   });
 };
 
