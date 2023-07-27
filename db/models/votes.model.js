@@ -18,7 +18,7 @@ Vote.create = function (newVote, result) {
     });           
 };
 
-Vote.update = function(id, vote, result){
+Vote.update = function(id, vote, result) {
     sql.query("UPDATE bookranker.votes SET bookId=?,userId=?,stars=? WHERE id = ?", [vote.bookid, vote.userid, vote.stars, id], function (err, res) {
         if (err) {
             console.log("error: ", err);

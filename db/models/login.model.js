@@ -17,7 +17,4 @@ Login.create = function (newLogin, result) {
     });           
 };
 
-
-
-
 module.exports = Book;

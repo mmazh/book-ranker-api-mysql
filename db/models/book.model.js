@@ -29,5 +29,4 @@ Book.findAll = function (result) {
     });   
 };
 
-
 module.exports = Book;

@@ -8,7 +8,6 @@ exports.findAll = function(req, res) {
   });
 };
 
-
 exports.create = function(req, res) {
     const newBook = new Book(req.body);
     Book.create(newBook, function(err, book) {

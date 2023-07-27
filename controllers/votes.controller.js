@@ -7,7 +7,6 @@ exports.findAll = function(req, res) {
   });
 };
 
-
 exports.create = function(req, res) {
     const newVote = new Votes(req.body);
     Votes.create(newVote, function(err, vote) {
