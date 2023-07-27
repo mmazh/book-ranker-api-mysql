@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bookRoutes = require('./routes/book.routes')
 
 const app = express();
 
@@ -15,11 +16,13 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-// simple route
-app.get("/", (req, res) => {
-  res.json({ message: "Hello World" });
+// root route
+app.get('/', (req, res) => {
+  res.send("Hello World");
 });
 
+// using as middleware
+app.use('/book', bookRoutes);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
