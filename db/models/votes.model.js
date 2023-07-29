@@ -33,7 +33,9 @@ Vote.update = function(id, vote, result) {
 };
 
 Vote.findAll = function (result) {
-    sql.query("SELECT * FROM bookranker.votes", function (err, res) {
+    let query = `SELECT votes.userId, votes.stars, votes.voteId, votes.bookId
+                FROM votes`
+    sql.query(query, function (err, res) {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -45,7 +47,7 @@ Vote.findAll = function (result) {
 };
 
 Vote.findAllForBook = function (id, result) {
-    let query = `Select votes.userId, votes.bookId, login.username, votes.stars 
+    let query = `Select login.username, votes.stars 
                 FROM votes
                 INNER JOIN login ON login.userId=votes.userId
                 WHERE votes.bookId=?`

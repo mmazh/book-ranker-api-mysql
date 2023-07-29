@@ -7,3 +7,10 @@ exports.create = function(req, res) {
         res.json({ error:false, data:login });
     });
 };
+
+exports.findAllUsers = function(req, res) {
+    Login.findAllUsers(function(err, user) {
+        if (err) res.send(err);
+        res.send(user);
+    });
+};

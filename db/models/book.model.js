@@ -18,7 +18,9 @@ Book.create = function (newBook, result) {
 };
 
 Book.findAll = function (result) {
-    sql.query("Select * from bookranker.book", function (err, res) {
+    let query = `SELECT * FROM bookranker.book
+                ORDER BY book.title ASC`
+    sql.query(query, function (err, res) {
         if (err) {
             console.log("error: ", err);
             result(null, err);
