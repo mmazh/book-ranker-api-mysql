@@ -30,8 +30,8 @@ exports.create = function(req, res) {
 };
 
 exports.update = function(req, res) {
-    Votes.update(req.params.id, new Votes(req.body), function(err, vote) {
-        if (err) res.send(err);
-        res.json({ error:false, data:vote });
-    });
+  Votes.update(req.params.id, new Votes(req.body), function(err, vote) {
+    if (err) res.send(err);
+    res.json({ error:false, data:vote });
+  });
 };

@@ -1,8 +1,8 @@
 var sql = require('../db');
 
 var Vote = function(vote) {
-    this.bookid = vote.bookid;
-    this.userid = vote.userid;
+    this.bookId = vote.bookId;
+    this.userId = vote.userId;
     this.stars = vote.stars;
 };
 
@@ -19,17 +19,17 @@ Vote.create = function (newVote, result) {
 };
 
 Vote.update = function(id, vote, result) {
-    let query = `UPDATE bookranker.votes 
-                SET bookId=?, userId=?, stars=? 
-                WHERE id=?`
-    sql.query(query, [vote.bookid, vote.userid, vote.stars, id], function (err, res) {
+    let query = `UPDATE bookranker.votes
+                SET bookId=?, userId=?, stars=?
+                WHERE voteId=?`
+    sql.query(query, [vote.bookId, vote.userId, vote.stars, id], function (err, res) {
         if (err) {
             console.log("error: ", err);
             result(null, err);
-        } else {   
+        } else {
             result(null, res);
         }
-    }); 
+    });
 };
 
 Vote.findAll = function (result) {
