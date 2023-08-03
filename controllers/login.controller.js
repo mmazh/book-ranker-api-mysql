@@ -14,3 +14,11 @@ exports.findAllUsers = function(req, res) {
         res.send(user);
     });
 };
+
+exports.validateUser = function(req, res) {
+    const login = new Login(req.body);
+    Login.validateUser(login, function(err, user) {
+        if (err) res.send(err);
+        res.send(user);
+    });
+};
