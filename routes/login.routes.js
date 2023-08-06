@@ -6,9 +6,6 @@ const auth = require('../middleware/auth.middleware');
 // Create a new login
 router.post('/new', loginController.create);
 
-// Authenticate User
-router.post('/', loginController.validateUser);
-
 // Get all users and ids
 router.get('/users', loginController.findAllUsers);
 

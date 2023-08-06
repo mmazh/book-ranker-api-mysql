@@ -12,28 +12,27 @@ Login.validateUser = function (loginInfo, result) {
                 FROM login
                 WHERE login.username=?`
     sql.query(query, [loginInfo.username], function (err, res) {
-        if (err) return result(null, false);
-        if (res.length === 0) return result(null, false); // 401 error
+        if (err) return result(500);
+        if (res.length === 0) return result(401);
 
-        bcrypt.compare(loginInfo.password, res[0].hashedpass).then(
-            val => result(null, {valid: val, id: res[0].userId}),
-            err => result(null, err));
+        bcrypt.compare(loginInfo.password, res[0].hashedpass).then(val => {
+            if (!val) return result(401);
+            result(null, { userId: res[0].userId })},
+            err => result(500));
         }
     );
 };
 
 Login.create = function (newLogin, result) {
     bcrypt.hash(newLogin.password, saltRounds).then(hash => {
-        let data = { 
-            username: newLogin.username,
-            hashedpass: hash 
-        }
+        let data = { username: newLogin.username, hashedpass: hash }
+
         sql.query("INSERT INTO bookranker.login SET ?", data, function (err, res) {
             if (err) return result(err, null);
-            result(200);
-        });
-    },
-    err => console.error(err.message));
+            result(200) })},
+            
+        err => console.error(err.message)
+    );
 };
 
 Login.findAllUsers = function (result) {

@@ -18,21 +18,19 @@ exports.findAllUsers = function(req, res) {
     });
 };
 
-exports.validateUser = function(req, res) {
+exports.validateUser = function(req, res, next) {
     const login = new Login(req.body);
     Login.validateUser(login, function(err, user) {
-        if (err) return res.send(err);
-        if (!user.valid) return res.sendStatus(401);
-
-        let data = { "userid": user.id, "username": req.body.username };
-        let accessToken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET);
-        res.send({accessToken: accessToken});
+        if (err) return res.sendStatus(err);
+        req.userId = user.userId;
+        res.status(200);
+        next();
     });
 };
 
 exports.delete = function(req, res) {
     Login.delete(req.userId, function(err, val) {
         if (err) return res.sendStatus(401);
-        res.send(val);
+        res.sendStatus(200);
     });
 };
