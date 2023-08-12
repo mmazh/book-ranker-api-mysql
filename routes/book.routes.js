@@ -13,6 +13,6 @@ router.get('/top3', bookController.findTopThree);
 router.post('/', bookController.create);
 
 // Delete a book
-router.delete('/:bookId', auth.authenticateToken, bookController.delete);
+router.delete('/:bookId', auth.authenticateAccessToken, bookController.delete);
 
 module.exports = router

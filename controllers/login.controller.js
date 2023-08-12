@@ -17,20 +17,3 @@ exports.findAllUsers = function(req, res) {
         res.send(user);
     });
 };
-
-exports.validateUser = function(req, res, next) {
-    const login = new Login(req.body);
-    Login.validateUser(login, function(err, user) {
-        if (err) return res.sendStatus(err);
-        req.userId = user.userId;
-        res.status(200);
-        next();
-    });
-};
-
-exports.delete = function(req, res) {
-    Login.delete(req.userId, function(err, val) {
-        if (err) return res.sendStatus(401);
-        res.sendStatus(200);
-    });
-};

@@ -26,8 +26,8 @@ Vote.update = function(id, vote, result) {
         if (user[0].userId !== vote.userId) return result(403, null);
 
         sql.query(query, [vote.stars, id], function (err, res) {
-            if (err) return result(null, err);
-            result(200, null);
+            if (err) return result(err, null);
+            result(null, 200);
         });
     });
 };
@@ -36,7 +36,7 @@ Vote.findAll = function (result) {
     let query = `SELECT votes.userId, votes.stars, votes.voteId, votes.bookId
                 FROM votes`
     sql.query(query, function (err, res) {
-        if (err) return result(null, err);
+        if (err) return result(err, null);
         result(null, res);
     });   
 };
@@ -47,18 +47,19 @@ Vote.findAllForBook = function (id, result) {
                 INNER JOIN login ON login.userId=votes.userId
                 WHERE votes.bookId=?`
     sql.query(query, [id], function (err, res) {
-        if (err) return result(null, err);
+        if (err) return result(err, null);
         result(null, res);
     });   
 };
 
 Vote.findAllForUser = function (id, result) {
-    let query = `Select votes.userId, votes.bookId, login.username, votes.stars 
+    let query = `SELECT votes.voteId, votes.userId, votes.bookId, votes.stars, book.title, book.author
                 FROM votes
                 INNER JOIN login ON login.userId=votes.userId
-                WHERE votes.userId=?;`
+                INNER JOIN book ON votes.bookId=book.bookId
+                WHERE votes.userId=?`
     sql.query(query, [id], function (err, res) {
-        if (err) return result(null, err);
+        if (err) return result(err, null);
         result(null, res);
     });   
 };
@@ -70,13 +71,13 @@ Vote.delete = function (voteId, userId, result) {
                     FROM votes
                     WHERE voteId=?`
     sql.query(getUser, voteId, function (err, user) {
-        if (err) return result(null, err);
+        if (err) return result(err, null);
         if (user.length == 0) return result(400, null);
         if (user[0].userId !== userId) return result(403, null);
 
         sql.query(query, voteId, function (err, res) {
-            if (err) return result(null, err);
-            result(200, null);
+            if (err) return result(err, null);
+            result(null, 200);
         });
     })
 };

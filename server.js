@@ -6,8 +6,10 @@ const votesRoutes = require('./routes/votes.routes')
 
 const app = express();
 
-app.use(cors());
-app.options('*', cors());
+app.use(cors({ 
+  origin: 'http://localhost:4200',
+  methods: "GET,POST,DELETE,UPDATE,PUT"
+}));
 
 // parse requests of content-type - application/json
 app.use(express.json());

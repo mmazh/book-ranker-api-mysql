@@ -29,8 +29,8 @@ Login.create = function (newLogin, result) {
 
         sql.query("INSERT INTO bookranker.login SET ?", data, function (err, res) {
             if (err) return result(err, null);
-            result(200) })},
-            
+            result(null, 200) 
+        })},
         err => console.error(err.message)
     );
 };
@@ -49,7 +49,7 @@ Login.delete = function (userId, result) {
                 WHERE login.userId=?`
     sql.query(query, userId, function (err, res) {
         if (err) return result(null, err);
-        result(200);
+        result(null, 200);
     });
 };
 

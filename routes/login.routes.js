@@ -9,7 +9,4 @@ router.post('/new', loginController.create);
 // Get all users and ids
 router.get('/users', loginController.findAllUsers);
 
-// Delete a user
-router.delete('/', auth.authenticateToken, loginController.delete);
-
 module.exports = router
