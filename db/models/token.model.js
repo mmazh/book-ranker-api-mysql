@@ -12,7 +12,7 @@ Token.refreshTokenExists = function (token, userId, result) {
                 WHERE tokens.userId=?`
     sql.query(query, userId, function (err, res) {
         if (err) return result(500, null);
-        if (res.length === 0) return result(401);
+        if (res.length === 0) return result(401, null);
         bcrypt.compare(token, res[0].tokenHash).then(
             val => result(null, val),
             err => result(500, null));

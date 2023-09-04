@@ -19,46 +19,51 @@ app.use(cors({
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.sendStatus(200);
+  res.json({ status: 200 });
 });
 
 
 // Authenticate User Credentials
 app.post('/login', auth.validateUser, (req, res) => {
-  if (res.statusCode !== 200) return res;
+  if (res.statusCode !== 200) return res.json({ status: res.statusCode });
 
   const data = { userid: req.userId, username: req.body.username };
   const accessToken = generateAccessToken(data);
   const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
 
   Token.add(refreshToken, req.userId, function(err, token) {
-    if (err) return res.send(err);
-    res.cookie("Refresh-Token", refreshToken, { secure: true, httpOnly: true, sameSite: 'none' });
-    res.status(200).send({accessToken: accessToken});
+    if (err) return res.json({ status: 500 });
+    res.cookie("Refresh-Token", refreshToken, { 
+      domain: 'localhost',
+      secure: true,
+      httpOnly: true,
+      sameSite: 'none' 
+    });
+    res.send({status: 200, accessToken: accessToken});
   });
 });
 
 
 // Generate new access token using refresh token
 app.get('/token', auth.refreshTokenExists, auth.authenticateRefreshToken, (req, res) => {
-  if (res.statusCode !== 200) return res;
-
+  if (res.statusCode !== 200) return res.json({ status: res.statusCode });
+  console.log(req.body);
+  
   const data = { userid: req.body.userId, username: req.body.username };
   const accessToken = generateAccessToken(data);
-  res.json({ accessToken: accessToken }); 
+  res.json({ status: 200, accessToken: accessToken }); 
 });
 
 
 // Delete refresh token after user logs out
 app.delete('/logout', (req, res) => {
   const refreshToken = req.cookies['Refresh-Token'];
-  if (!refreshToken) {
-    res.json({ status: 200 });
-  }
+  if (typeof refreshToken == "undefined") return res.json({ status: 200 });
+  
   const userId = JSON.parse(atob(refreshToken.split('.')[1]))['userid'];
   res.clearCookie('Refresh-Token');
   Token.delete(userId, function(err, token) {
-    if (err) return res.send(err);
+    if (err) return res.json({ status: 500 });
     res.json({ status: 200 });
   });
 });
@@ -67,7 +72,7 @@ app.delete('/logout', (req, res) => {
 // Delete a user
 app.delete('/user', auth.authenticateAccessToken, (req, res) => {
   Login.delete(req.userId, function(err, val) {
-  if (err) return res.sendStatus(401);
+  if (err) return res.json({ status: 500 });
   res.json({ status: 200 });
   })
 });
