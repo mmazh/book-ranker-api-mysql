@@ -6,17 +6,25 @@ const auth = require('./middleware/auth.middleware');
 const Token = require('./db/models/token.model');
 const Login = require('./db/models/login.model');
 const cookieParser = require('cookie-parser');
+const https=require('https')
+const fs=require('fs')
+const path=require('path')
 
 const app = express();
-const PORT = 8081;
+HTTPS_PORT = 443;
+const options = {
+  key: fs.readFileSync(path.join(__dirname,'./cert/key.pem')),
+  cert: fs.readFileSync(path.join(__dirname,'./cert/cert.pem'))
+}
 
 app.use(cookieParser());
 app.use(cors({ 
   origin: 'http://localhost:4200',
-  methods: "GET,POST,DELETE,UPDATE,PUT",
+  methods: "POST",
   credentials: true
 }));
 app.use(express.json());
+
 
 app.get('/', (req, res) => {
   res.json({ status: 200 });
@@ -25,8 +33,9 @@ app.get('/', (req, res) => {
 
 // Authenticate User Credentials
 app.post('/login', auth.validateUser, (req, res) => {
-  if (res.statusCode !== 200) return res.json({ status: res.statusCode });
-
+  if (res.statusCode !== 200) {
+    return res.json({ status: res.statusCode });
+  }
   const data = { userid: req.userId, username: req.body.username };
   const accessToken = generateAccessToken(data);
   const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
@@ -41,14 +50,15 @@ app.post('/login', auth.validateUser, (req, res) => {
     });
     res.send({status: 200, accessToken: accessToken});
   });
+  
 });
 
 
 // Generate new access token using refresh token
-app.get('/token', auth.refreshTokenExists, auth.authenticateRefreshToken, (req, res) => {
-  if (res.statusCode !== 200) return res.json({ status: res.statusCode });
-  console.log(req.body);
-  
+app.post('/token', auth.refreshTokenExists, auth.authenticateRefreshToken, (req, res) => {
+  if (res.statusCode !== 200) {
+    return res.json({ status: res.statusCode });
+  }
   const data = { userid: req.body.userId, username: req.body.username };
   const accessToken = generateAccessToken(data);
   res.json({ status: 200, accessToken: accessToken }); 
@@ -56,10 +66,11 @@ app.get('/token', auth.refreshTokenExists, auth.authenticateRefreshToken, (req, 
 
 
 // Delete refresh token after user logs out
-app.delete('/logout', (req, res) => {
+app.post('/logout', (req, res) => {
   const refreshToken = req.cookies['Refresh-Token'];
-  if (typeof refreshToken == "undefined") return res.json({ status: 200 });
-  
+  if (typeof refreshToken == "undefined") {
+    return res.json({ status: 401 });
+  }
   const userId = JSON.parse(atob(refreshToken.split('.')[1]))['userid'];
   res.clearCookie('Refresh-Token');
   Token.delete(userId, function(err, token) {
@@ -70,7 +81,7 @@ app.delete('/logout', (req, res) => {
 
 
 // Delete a user
-app.delete('/user', auth.authenticateAccessToken, (req, res) => {
+app.post('/user', auth.authenticateAccessToken, (req, res) => {
   Login.delete(req.userId, function(err, val) {
   if (err) return res.json({ status: 500 });
   res.json({ status: 200 });
@@ -82,7 +93,7 @@ function generateAccessToken(data) {
   return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s'});
 }
 
-
-app.listen(PORT, () => {
-  console.log(`Auth Server is running on port ${PORT}.`);
+const sslServer = https.createServer(options, app);
+sslServer.listen(HTTPS_PORT,()=>{
+  console.log(`Secure Auth Server is running on port ${HTTPS_PORT}`)
 });
