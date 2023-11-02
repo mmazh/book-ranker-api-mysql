@@ -48,9 +48,15 @@ app.post('/login', auth.validateUser, (req, res) => {
       httpOnly: true,
       sameSite: 'none' 
     });
-    res.send({status: 200, accessToken: accessToken});
+    const expiry = JSON.parse(atob(accessToken.split('.')[1]))['exp'];
+    res.send({
+      status: 200,
+      userId: req.userId,
+      username: req.body.username,
+      jwtAccessToken: accessToken,
+      jwtExpiry: expiry,
+    });
   });
-  
 });
 
 
@@ -61,7 +67,7 @@ app.post('/token', auth.refreshTokenExists, auth.authenticateRefreshToken, (req,
   }
   const data = { userid: req.body.userId, username: req.body.username };
   const accessToken = generateAccessToken(data);
-  res.json({ status: 200, accessToken: accessToken }); 
+  res.json({ status: 200, jwtAccessToken: accessToken }); 
 });
 
 
